@@ -11,6 +11,8 @@ Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignme
 pip install mysql-python
 #conda install -c etetoolkit ete2
 conda install circos
+conda install -c bioconda mummer
+conda install -c bioconda blast
 conda install -c conda-forge matplotlib
 conda install -c conda-forge/label/broken matplotlib
 conda install -c conda-forge/label/testing matplotlib
@@ -19,6 +21,12 @@ conda install -c conda-forge/label/rc matplotlib
 
 - add metagenlab/utils to pythonpath
 
+# alignment method
+
+- the whole genome alignments can be done with three different method: megablast, nucmer or promer
+- use the parameter *-a* to indicate which method to use. Nucmer is the default option.
+
+```mummer2circos.py -l -a promer```
 
 # Simple plot
 
@@ -69,7 +77,7 @@ conda install -c conda-forge/label/rc matplotlib
 
 ![Simple plot](examples/images/nucmer2circos_labels_coord.png)
 
-* highlight specific ranges based on coordinate file
+# highlight specific ranges based on coordinate file
 
 - overlapping ranges will overlap on the figure
 
