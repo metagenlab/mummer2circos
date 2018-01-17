@@ -26,9 +26,14 @@ conda install -c conda-forge/label/rc matplotlib
 - the whole genome alignments can be done with three different methods: megablast, nucmer or promer
 - use the parameter *-a* to indicate which method to use. Nucmer is the default option.
 
-```mummer2circos.py -l -a promer```
+```mummer2circos.py -l -a promer ...```
 
 # Simple plot
+
+- *-r* reference fasta
+- *-q* other fasta with to compare with the reference fasta
+- *-l* mendatory option to build circular plots
+- genome tracks are ordered based on the order of the input query fasta files
 
 ```mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*fna```
 
