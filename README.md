@@ -21,9 +21,9 @@ conda install -c conda-forge/label/rc matplotlib
 
 - add metagenlab/utils to pythonpath
 
-# alignment method
+# Alignment method
 
-- the whole genome alignments can be done with three different method: megablast, nucmer or promer
+- the whole genome alignments can be done with three different methods: megablast, nucmer or promer
 - use the parameter *-a* to indicate which method to use. Nucmer is the default option.
 
 ```mummer2circos.py -l -a promer```
@@ -77,7 +77,7 @@ conda install -c conda-forge/label/rc matplotlib
 
 ![Simple plot](examples/images/nucmer2circos_labels_coord.png)
 
-# highlight specific ranges based on coordinate file
+# Highlight specific ranges based on coordinate file
 
 - overlapping ranges will overlap on the figure
 
