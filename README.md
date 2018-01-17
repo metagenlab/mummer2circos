@@ -68,8 +68,8 @@ conda install -c conda-forge/label/rc matplotlib
 
 - depth files can be generated from bam file using *samtools depth*
 - the labels used in the .depth file should be the same as the fasta header (see example files) 
-- regions with depth higher than 2 times depth is croped to that limit at this location and coloured in green (deal with highly repeated sequences).
-- regions with depth which is lower than half of the median depth, depth is coloured in red at that location.
+- regions with depth higher than 2 times depth are croped to that limit and coloured in green (deal with highly repeated sequences).
+- regions with depth lower than half of the median depth are coloured in red.
 
 ``` mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth ```
 
