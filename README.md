@@ -1,7 +1,7 @@
 
 # Description
 
-Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignments.
+Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignments. Generate *SVG* and *PNG* images with circos (http://circos.ca/).
 
 # Installation
 
@@ -85,6 +85,7 @@ conda install -c conda-forge/label/rc matplotlib
 # Highlight specific ranges based on coordinate file
 
 - overlapping ranges will overlap on the figure
+- TODO: add the possibility to input multiple range files that would be displayed on different tracks
 
 
 
