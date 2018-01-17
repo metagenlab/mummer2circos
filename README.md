@@ -8,7 +8,7 @@ Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignme
 - install miniconda 2.7
 
 ```
-pip install mysql-python
+#pip install mysql-python
 #conda install -c etetoolkit ete2
 conda install circos
 conda install -c bioconda mummer
@@ -68,6 +68,8 @@ conda install -c conda-forge/label/rc matplotlib
 
 - depth files can be generated from bam file using *samtools depth*
 - the labels used in the .depth file should be the same as the fasta header (see example files) 
+- regions with depth higher than 2 times depth is croped to that limit at this location and coloured in green (deal with highly repeated sequences).
+- regions with depth which is lower than half of the median depth, depth is coloured in red at that location.
 
 ``` mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth ```
 
