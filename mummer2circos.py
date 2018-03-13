@@ -18,8 +18,9 @@ import string
 def purge(dir, pattern):
     import os
     for f in os.listdir(dir):
-    	if re.search(pattern, f):
-    		os.remove(os.path.join(dir, f))
+        if re.search(pattern, f):
+            os.remove(os.path.join(dir, f))
+
 
 class CircosException(Exception):
     pass
@@ -28,7 +29,7 @@ class CircosException(Exception):
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), n):
-        yield l[i:i+n]
+        yield l[i:i + n]
 
 
 class Fasta2circos():
@@ -53,19 +54,19 @@ class Fasta2circos():
         import nucmer_utility
         import os
         from Bio import SeqIO
-	import gbk2circos
+        import gbk2circos
 
         self.contigs_add = {}
-        print "fasta1", fasta1
-        print "fasta2", len(fasta2), fasta2
-        print "highlight list", highlight_list
-        print "heatmap", heatmap
+        print ("fasta1", fasta1)
+        print ("fasta2", len(fasta2), fasta2)
+        print ("highlight list", highlight_list)
+        print ("heatmap", heatmap)
         self.working_dir = os.getcwd()
         self.last_track = 0.99
         self.window_size = window_size
 
         if algo == "nucmer":
-            print "fasta1", fasta1
+            print ("fasta1", fasta1)
             nucmer_utility.execute_promer(fasta1, fasta2, algo="nucmer")
         elif algo == "megablast":
             self.execute_megablast(fasta1, fasta2)
@@ -82,33 +83,29 @@ class Fasta2circos():
             records = [i for i in SeqIO.parse(open(fasta1), "fasta")]
             self.contigs_add = circos_utils.get_contigs_coords(records)
 
-            
             self.circos_reference = gbk2circos.Circos_config("circos_contigs.txt",
                                                              show_ideogram_labels="no",
                                                              radius=0.7,
                                                              show_tick_labels="yes",
                                                              show_ticks="yes")
 
-
             if gbk2orf:
-
-
                 minus, plus = self.gbk2circos_data(gbk2orf)
                 self.circos_reference.add_highlight(minus,
                                                     'grey_a1',
                                                     r1="%sr" % (self.last_track - 0.01),
                                                     r0="%sr" % (self.last_track - 0.03))
-                self.last_track-=0.03
+                self.last_track -= 0.03
 
                 self.circos_reference.add_highlight(plus,
                                                     'grey_a1',
                                                     r1="%sr" % (self.last_track),
                                                     r0="%sr" % (self.last_track - 0.02))
-                self.last_track-=0.05
+                self.last_track -= 0.05
 
-            #genome_list = [i.split('.')[0] + '.heat' for i in fasta2]
+            # genome_list = [i.split('.')[0] + '.heat' for i in fasta2]
 
-            #self.add_multiple_genome_tracks(genome_list, highlight_list)
+            # self.add_multiple_genome_tracks(genome_list, highlight_list)
 
             updated_list = []
             gap_hilight_list = []
@@ -118,29 +115,31 @@ class Fasta2circos():
 
                 out_prefix = os.path.basename(one_fasta).split('.')[0]
 
-                if i%2 == 0:
-                    col=200
+                if i % 2 == 0:
+                    col = 200
                 else:
-                    col=250
-                #try:
+                    col = 250
+                # try:
                 if algo == "nucmer" or algo == 'promer':
-                    print one_fasta
+                    print (one_fasta)
 
-                    #hit_list, query_list, contig2start_stop_list = self.nucmer_coords2heatmap("%s.coords" % one_fasta.split('.')[0], col=col, algo=algo)
+                    # hit_list, query_list, contig2start_stop_list = self.nucmer_coords2heatmap("%s.coords" % one_fasta.split('.')[0], col=col, algo=algo)
 
                     hit_list, query_list = nucmer_utility.coord_file2circos_heat_file("%s.coords" % out_prefix,
                                                                                       self.contigs_add, algo=algo)
                     contig2start_stop_list = nucmer_utility.delta_file2start_stop_list("%s.delta" % out_prefix,
-                                                                                       self.contigs_add, algo=algo, minimum_identity=5)
+                                                                                       self.contigs_add, algo=algo,
+                                                                                       minimum_identity=5)
 
                 elif algo == "megablast":
-                    hit_list, query_list, contig2start_stop_list = self.megablast2heatmap("blast_result_%s.tab" % out_prefix, col=col)
+                    hit_list, query_list, contig2start_stop_list = self.megablast2heatmap(
+                        "blast_result_%s.tab" % out_prefix, col=col)
                 else:
                     raise IOError('unknown algo!')
                 all_hit_list += hit_list
                 all_query_list += query_list
                 updated_list.append(os.path.basename(one_fasta))
-                #except:
+                # except:
                 #    continue
                 if gaps:
 
@@ -149,13 +148,12 @@ class Fasta2circos():
                                                                            out_highlight="circos_gaps_highlight_%s.txt" % i,
                                                                            min_gap_size=min_gap_size,
                                                                            gap_merge_distance=0)
-                    #get_gaps_from_start_stop_lists(contig2start_stop_list, out_highlight="circos_gaps_highlight_%s.txt" % i, out_labels="circos_gaps_labels_%s.txt" % i, min_gap_size=min_gap_size)
-                    if i%2 == 0:
+                    # get_gaps_from_start_stop_lists(contig2start_stop_list, out_highlight="circos_gaps_highlight_%s.txt" % i, out_labels="circos_gaps_labels_%s.txt" % i, min_gap_size=min_gap_size)
+                    if i % 2 == 0:
                         color = "orrd-9-seq-9"
                     else:
                         color = "blues-9-seq-9"
                     gap_hilight_list.append([color, "circos_gaps_highlight_%s.txt" % i])
-
 
                     supp = '''show_links     = yes
                             link_dims      = 4p,4p,4p,4p,4p
@@ -168,7 +166,7 @@ class Fasta2circos():
                             padding  = 0p
                             rpadding = 0p
                             '''
-                    #self.circos_reference.add_plot("circos_gaps_labels_%s.txt" % i ,type="text", r0="1r", r1="1.3r",color="black",rules=supp)
+                    # self.circos_reference.add_plot("circos_gaps_labels_%s.txt" % i ,type="text", r0="1r", r1="1.3r",color="black",rules=supp)
             genome_list = [i.split('.')[0] + '.heat' for i in updated_list]
             self.add_multiple_genome_tracks(genome_list, highlight_list, condensed=condensed_tracks)
             if gaps:
@@ -177,19 +175,16 @@ class Fasta2circos():
                                                         i[0],
                                                         r1="%sr" % (self.last_track - 0.01),
                                                         r0="%sr" % (self.last_track - 0.03))
-                    self.last_track-=0.03
+                    self.last_track -= 0.03
 
-
-
-                    
             if blast:
                 self.blast2circos_file(blast, fasta1, blastn=blastn)
 
-                #self.circos_reference.add_highlight("circos_blast.txt",
+                # self.circos_reference.add_highlight("circos_blast.txt",
                 #                               'red',
                 #                               r1="%sr" % (self.last_track - 0.01),
                 #                               r0="%sr" % (self.last_track - 0.03))
-                #self.last_track -= 0.03
+                # self.last_track -= 0.03
                 # snuggle_refine                 = yes
                 supp = '''
                         label_snuggle             = yes
@@ -206,8 +201,8 @@ class Fasta2circos():
                         padding  = 0p
                         rpadding = 0p
                         '''
-                self.circos_reference.add_plot("circos_blast_labels.txt", type="text", r0="1r", r1="2r", color="black", rules=supp)
-
+                self.circos_reference.add_plot("circos_blast_labels.txt", type="text", r0="1r", r1="2r", color="black",
+                                               rules=supp)
 
             if label_file:
                 supp = '''
@@ -234,15 +229,16 @@ class Fasta2circos():
                         end = str(int(data[2]) + self.contigs_add[data[0]][0])
                         data[1] = start
                         data[2] = end
-                        o.write('\t'.join(data)+'\n')
+                        o.write('\t'.join(data) + '\n')
                 o.close()
 
-                self.circos_reference.add_plot('circos.labels.tab', type="text", r0="1r", r1="2r", color="black", rules=supp)
-
+                self.circos_reference.add_plot('circos.labels.tab', type="text", r0="1r", r1="2r", color="black",
+                                               rules=supp)
 
             if gbk2orf and secretion_systems:
                 self.records = [i for i in SeqIO.parse(gbk2orf, 'genbank')]
-                circos_utils.macsyfinder_table2circos(secretion_systems, self.records, self.contigs_add,'circos_secretion_systems.txt')
+                circos_utils.macsyfinder_table2circos(secretion_systems, self.records, self.contigs_add,
+                                                      'circos_secretion_systems.txt')
 
                 supp = '''
                         label_snuggle             = yes
@@ -260,9 +256,8 @@ class Fasta2circos():
                         rpadding = 0p
 
                         '''
-                self.circos_reference.add_plot('circos_secretion_systems.txt', type="text", r0="1r", r1="1.6r", color="black", rules=supp)
-
-
+                self.circos_reference.add_plot('circos_secretion_systems.txt', type="text", r0="1r", r1="1.6r",
+                                               color="black", rules=supp)
 
             if gc:
                 import GC
@@ -277,19 +272,20 @@ class Fasta2circos():
 
                 out_var = ''
                 out_skew = ''
-                out_cumul_skew=''
-                out_gc_content=''
+                out_cumul_skew = ''
+                out_gc_content = ''
                 initial = 0
                 for n, record in enumerate(fasta_records):
-                    contig = re.sub("\|", "", record.name)
+                    contig = re.sub("\|", "", record.id)
                     shift = self.contigs_add[contig][0]
                     # this function handle scaffolds (split sequence when encountering NNNNN regions)
                     out_var += GC.circos_gc_var(record, self.window_size, shift=shift)
-                    circos_cumul, initial = GC.circos_cumul_gc_skew(record, self.window_size, shift=shift, initial=initial)
-                    out_cumul_skew+=circos_cumul
+                    circos_cumul, initial = GC.circos_cumul_gc_skew(record, self.window_size, shift=shift,
+                                                                    initial=initial)
+                    out_cumul_skew += circos_cumul
                     out_skew += GC.circos_gc_skew(record, self.window_size, shift=shift)
-                    out_gc_content+=GC.circos_gc_content(record, self.window_size, shift=shift)
-                #print out_skew
+                    out_gc_content += GC.circos_gc_content(record, self.window_size, shift=shift)
+                # print out_skew
                 f.write(out_var)
                 g.write(out_skew)
                 f.close()
@@ -333,15 +329,18 @@ class Fasta2circos():
                         </rule>
                 """
 
-                self.last_track = self.last_track-0.1
+                self.last_track = self.last_track - 0.1
 
                 conditions = self.circos_reference.template_rules % (rule)
-                self.circos_reference.add_plot('circos_GC_skew.txt', fill_color="green", r0="%sr" % (self.last_track -0.01), r1= "%sr" % (self.last_track -0.09), type="line", rules=conditions)
+                self.circos_reference.add_plot('circos_GC_skew.txt', fill_color="green",
+                                               r0="%sr" % (self.last_track - 0.01), r1="%sr" % (self.last_track - 0.09),
+                                               type="line", rules=conditions)
 
                 conditions = self.circos_reference.template_rules % (rule2)
-                self.circos_reference.add_plot('circos_GC_var.txt', fill_color="green", r0="%sr" % (self.last_track -0.11), r1= "%sr" % (self.last_track -0.19), type="line", rules=conditions)
-                self.last_track = self.last_track -0.11
-
+                self.circos_reference.add_plot('circos_GC_var.txt', fill_color="green",
+                                               r0="%sr" % (self.last_track - 0.11), r1="%sr" % (self.last_track - 0.19),
+                                               type="line", rules=conditions)
+                self.last_track = self.last_track - 0.11
 
                 '''
                 out_cumul = open('circos_cumul_GC_skew.txt', 'w')
@@ -359,22 +358,20 @@ class Fasta2circos():
                 self.last_track = self.last_track -0.11
                 '''
 
-
         if heatmap:
-            c1, c2, c3, c4 = self.get_karyotype_from_fasta(fasta1, fasta2, list(set(all_hit_list)), list(set(all_query_list)), filter_ref, filter_query, both_fasta=False)
-            #self.config = self.get_circos_config(c1, c2, c3, c4, link=False, heat=True)
+            c1, c2, c3, c4 = self.get_karyotype_from_fasta(fasta1, fasta2, list(set(all_hit_list)),
+                                                           list(set(all_query_list)), filter_ref, filter_query,
+                                                           both_fasta=False)
+            # self.config = self.get_circos_config(c1, c2, c3, c4, link=False, heat=True)
 
             self.config = self.circos_reference.get_file()
-
-
-
 
             if samtools_depth is not None:
                 for i, depth_file in enumerate(samtools_depth):
                     all_contigs_median = self.samtools_depth2circos_data(depth_file, i, window=self.window_size)
                     self.add_samtools_depth_track('circos_samtools_depth_%s.txt' % i,
-                                                  lower_cutoff=int(all_contigs_median)/2,
-                                                  top_cutoff=int(all_contigs_median)*2,
+                                                  lower_cutoff=int(all_contigs_median) / 2,
+                                                  top_cutoff=int(all_contigs_median) * 2,
                                                   r1=self.last_track - 0.08,
                                                   r0=self.last_track - 0.25)
                     self.last_track -= 0.25
@@ -385,30 +382,32 @@ class Fasta2circos():
             # c3 mid1 last hit id
             # c4 mid2
 
-            last_seq_id, first_seq_id, mid1, mid2 = self.get_karyotype_from_fasta(fasta1, fasta2, hit_list, query_list, filter_ref, filter_query, both_fasta=True, cumul=False)
-
+            last_seq_id, first_seq_id, mid1, mid2 = self.get_karyotype_from_fasta(fasta1, fasta2, hit_list, query_list,
+                                                                                  filter_ref, filter_query,
+                                                                                  both_fasta=True, cumul=False)
 
             self.circos_reference = gbk2circos.Circos_config("circos_contigs.txt",
                                                              show_ideogram_labels="yes",
                                                              radius=0.7,
                                                              show_tick_labels="yes",
                                                              show_ticks="yes",
-                                                             chr_spacing_list=[[last_seq_id, first_seq_id],[mid1, mid2]],
+                                                             chr_spacing_list=[[last_seq_id, first_seq_id],
+                                                                               [mid1, mid2]],
                                                              ideogram_spacing=0.5,
                                                              color_files='\n<<include colors.my>>')
 
             self.circos_reference.add_link("circos.link")
 
-
             if samtools_depth is not None:
                 for i, depth_file in enumerate(samtools_depth):
-                    all_contigs_median = circos_utils.samtools_depth2circos_data(depth_file, False, i,window=self.window_size)
+                    all_contigs_median = circos_utils.samtools_depth2circos_data(depth_file, False, i,
+                                                                                 window=self.window_size)
                     self.add_samtools_depth_track('circos_samtools_depth_%s.txt' % i,
-                                                  lower_cutoff=int(all_contigs_median)/2,
-                                                  top_cutoff=int(all_contigs_median)*2,
+                                                  lower_cutoff=int(all_contigs_median) / 2,
+                                                  top_cutoff=int(all_contigs_median) * 2,
                                                   r1=1.45,
                                                   r0=1.25)
-                    #self.last_track -= 0.25
+                    # self.last_track -= 0.25
             self.config = self.circos_reference.get_file()
             # last_seq_id, first_seq_id, mid1, mid2
             '''
@@ -469,44 +468,43 @@ class Fasta2circos():
         :return:
         '''
 
-
         import shell_command
         import blast_utils
         from Bio.Blast.Applications import NcbitblastnCommandline
         from Bio.Blast.Applications import NcbiblastnCommandline
 
         # todo catch IO errors, orther potential errors
-        a,b,c = shell_command.shell_command('formatdb -i %s -p F' % (reference))
-        #print a
-        #print b
-        print c
+        a, b, c = shell_command.shell_command('formatdb -i %s -p F' % (reference))
+        # print a
+        # print b
+        print (c)
         if not blastn:
             blast_cline = NcbitblastnCommandline(query=blast,
                                                  db=reference,
-                                                 evalue=0.00000001, # 0.001
+                                                 evalue=0.00000001,  # 0.001
                                                  outfmt=6,
                                                  out="blast.tmp")
         else:
             blast_cline = NcbiblastnCommandline(query=blast,
-                                                 db=reference,
-                                                 evalue=0.001,
-                                                 outfmt=6,
-                                                 out="blast.tmp")
+                                                db=reference,
+                                                evalue=0.001,
+                                                outfmt=6,
+                                                out="blast.tmp")
         stdout, stderr = blast_cline()
 
-        #a,b,c = shell_command.shell_command('tblastn -query %s -db %s -evalue 1e-5 -max_target_seqs 1 -outfmt 6 > blast.tmp' % (blast, reference))
-        #a,b,c = shell_command.shell_command('tblastn -query %s -db %s -evalue 1e-5 -max_target_seqs 1 -outfmt 6' % (blast, reference))
-        print '############## BLAST ###################'
-        #print a
-        #print b
-        #print c
+        # a,b,c = shell_command.shell_command('tblastn -query %s -db %s -evalue 1e-5 -max_target_seqs 1 -outfmt 6 > blast.tmp' % (blast, reference))
+        # a,b,c = shell_command.shell_command('tblastn -query %s -db %s -evalue 1e-5 -max_target_seqs 1 -outfmt 6' % (blast, reference))
+        print ('############## BLAST ###################')
+        # print a
+        # print b
+        # print c
 
         blast2data, queries = blast_utils.remove_blast_redundancy(["blast.tmp"], check_overlap=False)
 
         o = open('circos_blast.txt', "w")
         l = open('circos_blast_labels.txt', "w")
 
-        #with open(blast, 'r') as b:
+        # with open(blast, 'r') as b:
         '''
         for line in a.split('\n'):
 
@@ -523,58 +521,63 @@ class Fasta2circos():
         for contig in blast2data:
             cname = re.sub("\|", "", contig)
             for gene in blast2data[contig]:
-                if float(blast2data[contig][gene][0])>30: # 80,20
+                if float(blast2data[contig][gene][0]) > 30:  # 80,20
                     location = sorted(blast2data[contig][gene][1:3])
-                    o.write("%s\t%s\t%s\n" % (contig, location[0]+ self.contigs_add[cname][0], location[1]+ self.contigs_add[cname][0]))
-                    l.write("%s\t%s\t%s\t%s\n" % (contig,  location[0] + self.contigs_add[cname][0], location[1]+ self.contigs_add[cname][0], gene))
+                    o.write("%s\t%s\t%s\n" % (
+                    contig, location[0] + self.contigs_add[cname][0], location[1] + self.contigs_add[cname][0]))
+                    l.write("%s\t%s\t%s\t%s\n" % (
+                    contig, location[0] + self.contigs_add[cname][0], location[1] + self.contigs_add[cname][0], gene))
 
         o.close()
 
     def add_multiple_genome_tracks(self, track_file_list, highlight_list=[], condensed=False):
-        print 'track file list', track_file_list
+        print ('track file list', track_file_list)
         import os
 
         # r1 doit etre plus grand que r1
         r1 = self.last_track
-        #r0 = self.last_track-0.015
+        # r0 = self.last_track-0.015
         n = 0
         hc = 0
         for i, orthofile in enumerate(track_file_list):
-            n+=1
+            n += 1
             if orthofile not in highlight_list:
-                #print orthofile
+                # print orthofile
                 if not condensed:
-                    r0 = r1-0.015
+                    r0 = r1 - 0.015
                 else:
-                    r0 = r1-0.008
-                if n%2==0: # orrd-9-seq # blues
-                    self.circos_reference.add_plot(orthofile, type="heatmap", r1="%sr" % r1, r0= "%sr" % r0, color="ylorrd-9-seq", fill_color="", thickness = "2p", z = 1, rules ="", backgrounds="",url="")
+                    r0 = r1 - 0.008
+                if n % 2 == 0:  # orrd-9-seq # blues
+                    self.circos_reference.add_plot(orthofile, type="heatmap", r1="%sr" % r1, r0="%sr" % r0,
+                                                   color="ylorrd-9-seq", fill_color="", thickness="2p", z=1, rules="",
+                                                   backgrounds="", url="")
                 else:
-                    self.circos_reference.add_plot(orthofile, type="heatmap", r1="%sr" % r1, r0= "%sr" % r0, color="gnbu-9-seq", fill_color="", thickness = "2p", z = 1, rules ="", backgrounds="",url="")
+                    self.circos_reference.add_plot(orthofile, type="heatmap", r1="%sr" % r1, r0="%sr" % r0,
+                                                   color="gnbu-9-seq", fill_color="", thickness="2p", z=1, rules="",
+                                                   backgrounds="", url="")
 
-                #circos.add_highlight(orthofile, fill_color="ortho3", r1="%sr" % r1, r0= "%sr" % r0, href=href)
+                # circos.add_highlight(orthofile, fill_color="ortho3", r1="%sr" % r1, r0= "%sr" % r0, href=href)
                 if not condensed:
-                    r1 = r1-0.023 # 046
-                    r0 = r0-0.023 # 046
+                    r1 = r1 - 0.023  # 046
+                    r0 = r0 - 0.023  # 046
                 else:
-                    r1 = r1-0.011 # 046
-                    r0 = r0-0.011 # 046
+                    r1 = r1 - 0.011  # 046
+                    r0 = r0 - 0.011  # 046
             else:
-                r0 = r1-0.013
-                n-=1
-                if hc>9:
-                    hc=0
+                r0 = r1 - 0.013
+                n -= 1
+                if hc > 9:
+                    hc = 0
                 color = 'set1-9-qual-%s' % hc
-                hc+=1
-                self.circos_reference.add_highlight(orthofile, r1="%sr" % r1, r0= "%sr" % r0,fill_color=color)
-                r1 = r1-0.020 # 046
-                #r0 = r0-0.011
+                hc += 1
+                self.circos_reference.add_highlight(orthofile, r1="%sr" % r1, r0="%sr" % r0, fill_color=color)
+                r1 = r1 - 0.020  # 046
+                # r0 = r0-0.011
 
         self.last_track = r0
         self.config = self.circos_reference.get_file()
 
-        #t = open('circos.config', "w")
-
+        # t = open('circos.config', "w")
 
     def add_samtools_depth_track(self, samtools_file, lower_cutoff=50, top_cutoff=5000, r0=0.8, r1=0.7):
 
@@ -597,38 +600,38 @@ class Fasta2circos():
                lower_cutoff)
 
         self.circos_reference.add_plot(samtools_file,
-                        type="histogram",
-                        r1="%sr" % (r1),
-                        r0= "%sr" % (r0),
-                        color="black",
-                        fill_color="grey_a5",
-                        thickness = "1p",
-                        z = 1,
-                        rules =rules,
-                        backgrounds="",
-                        url="")
-
+                                       type="histogram",
+                                       r1="%sr" % (r1),
+                                       r0="%sr" % (r0),
+                                       color="black",
+                                       fill_color="grey_a5",
+                                       thickness="1p",
+                                       z=1,
+                                       rules=rules,
+                                       backgrounds="",
+                                       url="")
 
         self.config = self.circos_reference.get_file()
-
 
     def run_circos(self, config_file="circos.config", out_prefix="circos"):
         import shell_command
         cmd = 'circos -outputfile %s.svg -conf %s' % (out_prefix, config_file)
-        a,b,c = shell_command.shell_command(cmd)
-        print "out", a, "err", b, "code", c
+        a, b, c = shell_command.shell_command(cmd)
+        sys.stdout.write(str(a))
+        sys.stdout.write(str(b))
+        sys.stdout.write(str(c))
+        sys.stdout.flush()
         if c == 255:
             raise CircosException("Circos problem, check files... quitting")
-
 
     def clean_tmp_files(self):
         import os
         os.remove("colors.my")
         os.remove("out.delta")
-        #os.remove("circos.link")
-        #os.remove("circos.html")
+        # os.remove("circos.link")
+        # os.remove("circos.html")
         os.remove("circos_contigs.txt")
-        #os.remove("circos.config")
+        # os.remove("circos.config")
         os.remove("brewer.all.conf")
         d = os.getcwd()
         purge(d, ".*.heat")
@@ -649,12 +652,12 @@ class Fasta2circos():
         with open("etc/brewer.all.conf", "w") as f:
             f.write(color_config)
         '''
-    def id_generator(self, size=6, chars=string.ascii_lowercase ): # + string.digits
+
+    def id_generator(self, size=6, chars=string.ascii_lowercase):  # + string.digits
         return ''.join(random.choice(chars) for _ in range(size))
 
-
     def get_circos_config(self, last_seq_id, first_seq_id, mid1, mid2, link=True, heat=False):
-        print 'config heatmap', heat
+        print ('config heatmap', heat)
 
         link_code = '''
 
@@ -705,8 +708,6 @@ class Fasta2circos():
 
         '''
 
-
-
         chr_spacing = '''
 
            <pairwise %s %s>
@@ -714,7 +715,6 @@ class Fasta2circos():
         </pairwise>
 
         '''
-
 
         circos_config = '''
 
@@ -852,7 +852,6 @@ class Fasta2circos():
                 ch2 = chr_spacing % (mid1, mid2)
                 return circos_config % (0.5, ch1 + ch2, link_code)
 
-
     def get_karyotype_from_fasta(self,
                                  fasta1,
                                  fasta2,
@@ -861,7 +860,7 @@ class Fasta2circos():
                                  filter_ref=True,
                                  filter_query=True,
                                  out="circos_contigs.txt",
-                                 both_fasta = True,
+                                 both_fasta=True,
                                  cumul=True):
         from Bio import SeqIO
         import re
@@ -877,19 +876,19 @@ class Fasta2circos():
             contig_start = 0
             contig_end = 0
             for record in fasta_data1:
-                name = re.sub("\|", "", record.name)
-                print '#### contig ####', name
+                name = re.sub("\|", "", record.id)
+                print ('#### contig ####', name)
                 # cumulated length if not link plot and not filter_ref (TODO, put it as an argument?)
                 if cumul:
-                    contig_start = contig_end+1
-                contig_end = contig_start+len(record)
+                    contig_start = contig_end + 1
+                contig_end = contig_start + len(record)
 
                 # keep in memory
-                self.contig2start_psoition[name] = contig_end+1
+                self.contig2start_psoition[name] = contig_end + 1
 
                 if i == 4:
-                    i =0
-                i+=1
+                    i = 0
+                i += 1
 
                 if filter_ref:
                     if name in hit_list:
@@ -898,21 +897,21 @@ class Fasta2circos():
                             n2 = name
                         # spectral-5-div-%s
 
-                        f.write("chr - %s %s %s %s greys-3-seq-%s\n" % (name, name, contig_start, contig_end, i)) # i,
+                        f.write("chr - %s %s %s %s greys-3-seq-%s\n" % (name, name, contig_start, contig_end, i))  # i,
                 else:
                     n4 = name
                     if not 'n2' in locals():
                         n2 = name
                     # spectral-5-div-%s
 
-                    f.write("chr - %s %s %s %s greys-3-seq-%s\n" % (name, name, contig_start, contig_end, i)) # , i
+                    f.write("chr - %s %s %s %s greys-3-seq-%s\n" % (name, name, contig_start, contig_end, i))  # , i
 
             if both_fasta:
                 for record in fasta_data2:
-                    name = re.sub("\|", "", record.name)
+                    name = re.sub("\|", "", record.id)
                     if filter_query:
-                            if name in query_list:
-                                f.write("chr - %s %s %s %s spectral-5-div-%s\n" % (name, name, 0, len(record), i))
+                        if name in query_list:
+                            f.write("chr - %s %s %s %s spectral-5-div-%s\n" % (name, name, 0, len(record), i))
                     else:
                         f.write("chr - %s %s %s %s spectral-5-div-%s\n" % (name, name, 0, len(record), i))
         n1 = re.sub("\|", "", fasta_data2[-1].name)
@@ -921,20 +920,18 @@ class Fasta2circos():
             n2 = n1
         return (n1, n2, n3, n4)
 
-    def execute_megablast(self,fasta1, fasta2):
+    def execute_megablast(self, fasta1, fasta2):
         import os
         import shell_command
         for one_fasta in fasta2:
-
             out_prefix = os.path.basename(one_fasta).split('.')[0]
 
             cmd1 = "formatdb -i %s -p F" % one_fasta
             cmd2 = 'blastn -task megablast -query %s -db %s -evalue 1e-5 -outfmt 6 -out blast_result_%s.tab' % (fasta1,
-                                                                                                             one_fasta,
-                                                                                                             out_prefix)
+                                                                                                                one_fasta,
+                                                                                                                out_prefix)
             a, b, c = shell_command.shell_command(cmd1)
             a, b, c = shell_command.shell_command(cmd2)
-
 
     def justLinks(self, coords_input):
         ##Find first row after header
@@ -947,9 +944,6 @@ class Fasta2circos():
                 i += 1
 
         return coords_input[headerRow:None]
-
-
-
 
     def get_link(self, coords_input, link_file="circos.link", algo="nucmer"):
         import re
@@ -968,22 +962,22 @@ class Fasta2circos():
         all_id = [float(re.split(r'\t+', i.rstrip('\n'))[6]) for i in rawLinks]
         all_start = []
         all_ends = []
-        #print len(all_id), all_id
-        #print sorted(all_id)
+        # print len(all_id), all_id
+        # print sorted(all_id)
 
         id_min = min(all_id)
         id_max = max(all_id)
-        #print 'mimax', id_min, id_max
+        # print 'mimax', id_min, id_max
         norm = mpl.colors.Normalize(vmin=id_min, vmax=id_max)
         cmap = cm.Blues
-        cmap_blue = cm.Reds #OrRd
+        cmap_blue = cm.Reds  # OrRd
 
         m = cm.ScalarMappable(norm=norm, cmap=cmap)
         m2 = cm.ScalarMappable(norm=norm, cmap=cmap_blue)
         c = open('colors.my', 'w')
 
         with open(link_file, 'w') as f:
-            #c.write()
+            # c.write()
             i = 1
             hit_list = []
             query_list = []
@@ -992,7 +986,7 @@ class Fasta2circos():
                 l = re.split(r'\t+', row.rstrip('\n'))
 
                 # print l[14]
-                #f.write(l[13] + '\t' + l[0] + '\t' + l[1] + '\t' + re.sub("\|", "", l[14]) + '\t' + l[2] + '\t' + l[3] + '\n')
+                # f.write(l[13] + '\t' + l[0] + '\t' + l[1] + '\t' + re.sub("\|", "", l[14]) + '\t' + l[2] + '\t' + l[3] + '\n')
                 if int(l[0]) < int(l[1]) and int(l[2]) > int(l[3]):
                     color = m.to_rgba(float(l[6]))
 
@@ -1001,20 +995,21 @@ class Fasta2circos():
 
                 else:
                     color = m2.to_rgba(float(l[6]))
-                #print color, float(l[6])
+                # print color, float(l[6])
                 color_id = self.id_generator()
-                #print color_id, 'id:',l[6]
+                # print color_id, 'id:',l[6]
                 c.write('%s = %s,%s,%s,%s\n' % (color_id,
-                                                int(round(color[0]*250, 0)),
-                                                int(round(color[1]*250, 0)),
-                                                int(round(color[2]*250, 0)),
+                                                int(round(color[0] * 250, 0)),
+                                                int(round(color[1] * 250, 0)),
+                                                int(round(color[2] * 250, 0)),
                                                 0.5))
 
-                f.write(re.sub("\|", "", l[9+shift]) + '\t' + l[0] + '\t' + l[1] + '\t' + re.sub("\|", "", l[10+shift]) + '\t' + l[2] + '\t' + l[3] + '\tcolor=%s' % color_id +'\n')
+                f.write(re.sub("\|", "", l[9 + shift]) + '\t' + l[0] + '\t' + l[1] + '\t' + re.sub("\|", "", l[
+                    10 + shift]) + '\t' + l[2] + '\t' + l[3] + '\tcolor=%s' % color_id + '\n')
                 # sys.stdout.write
                 i += 1
-                hit_list.append(re.sub("\|", "", l[9+shift]))
-                query_list.append(re.sub("\|", "", l[10+shift]))
+                hit_list.append(re.sub("\|", "", l[9 + shift]))
+                query_list.append(re.sub("\|", "", l[10 + shift]))
         return (hit_list, query_list)
 
     def megablast2heatmap(self, megablast_input, link_file="circos.heat", col=250):
@@ -1024,28 +1019,26 @@ class Fasta2circos():
         from matplotlib.colors import rgb2hex
         import matplotlib as mpl
 
-
         with open(megablast_input, 'rU') as infile:
             rawLinks = [i.rstrip().split('\t') for i in infile]
 
         all_id = [float(i[2]) for i in rawLinks]
 
-        #print len(all_id), all_id
+        # print len(all_id), all_id
 
-        #print sorted(all_id)
+        # print sorted(all_id)
         try:
             id_min = min(all_id)
         except:
             return None
         id_max = max(all_id)
-        #print 'mimax', id_min, id_max
+        # print 'mimax', id_min, id_max
         norm = mpl.colors.Normalize(vmin=id_min, vmax=id_max)
         cmap = cm.Blues
-        cmap_blue = cm.Reds#OrRd
+        cmap_blue = cm.Reds  # OrRd
         m = cm.ScalarMappable(norm=norm, cmap=cmap)
         m2 = cm.ScalarMappable(norm=norm, cmap=cmap_blue)
         c = open('colors.my', 'w')
-
 
         contig2start_stop_list = {}
 
@@ -1064,27 +1057,27 @@ class Fasta2circos():
                     contig2start_stop_list[row[0]]["start"].append(row[6])
                     contig2start_stop_list[row[0]]["stop"].append(row[7])
                 # print l[14]
-                #f.write(l[13] + '\t' + l[0] + '\t' + l[1] + '\t' + re.sub("\|", "", l[14]) + '\t' + l[2] + '\t' + l[3] + '\n')
+                # f.write(l[13] + '\t' + l[0] + '\t' + l[1] + '\t' + re.sub("\|", "", l[14]) + '\t' + l[2] + '\t' + l[3] + '\n')
                 color = m2.to_rgba(float(row[2]))
-                #print color, float(l[6])
+                # print color, float(l[6])
                 color_id = self.id_generator()
-                #print color_id, 'id:',l[6]
+                # print color_id, 'id:',l[6]
 
                 c.write('%s = %s,%s,%s,%s\n' % (color_id,
-                                                int(round(color[0]*col, 0)),
-                                                int(round(color[1]*col ,0)),
-                                                int(round(color[2]*col, 0)),
+                                                int(round(color[0] * col, 0)),
+                                                int(round(color[1] * col, 0)),
+                                                int(round(color[2] * col, 0)),
                                                 0.5))
 
                 # RhT_1 178 895 0
 
-                f.write(re.sub("\|", "", row[0]) + '\t' + row[6] + '\t' + row[7] + '\t' + row[2] + "\tz=%s\t" % row[2] +'\n')
+                f.write(re.sub("\|", "", row[0]) + '\t' + row[6] + '\t' + row[7] + '\t' + row[2] + "\tz=%s\t" % row[
+                    2] + '\n')
                 # sys.stdout.write
                 i += 1
                 hit_list.append(re.sub("\|", "", row[0]))
                 query_list.append(re.sub("\|", "", row[1]))
         return (hit_list, query_list, contig2start_stop_list)
-
 
     def gbk2circos_data(self, gbk_file,
                         minus_file="circos_orf_minus.txt",
@@ -1097,38 +1090,37 @@ class Fasta2circos():
         with open(gbk_file, 'r') as f:
             for record in SeqIO.parse(f, 'genbank'):
                 for feature in record.features:
-                    start = str(feature.location.start+self.contigs_add[record.name][0])
-                    end = str(feature.location.end+self.contigs_add[record.name][0])
-                    if abs(int(end)-int(start)) > 100000:
+                    start = str(feature.location.start + self.contigs_add[record.id][0])
+                    end = str(feature.location.end + self.contigs_add[record.id][0])
+                    if abs(int(end) - int(start)) > 100000:
                         continue
                     if feature.type == 'CDS':
                         # deal with impossible size ORF
-                        #if 'hyp' in feature.qualifiers['product'][0]:
+                        # if 'hyp' in feature.qualifiers['product'][0]:
                         #    col='blue'
-                        #else:
-                        col='grey_a1'
-
+                        # else:
+                        col = 'grey_a1'
 
                         if int(feature.location.strand) == 1:
 
-                            p.write('%s\t%s\t%s\tfill_color=%s\n' % (record.name,
-                                                      start,
-                                                      end,
-                                                      col))
+                            p.write('%s\t%s\t%s\tfill_color=%s\n' % (record.id,
+                                                                     start,
+                                                                     end,
+                                                                     col))
                         else:
-                            m.write('%s\t%s\t%s\tfill_color=%s\n' % (record.name,
-                                                      start,
-                                                      end,
-                                                      col))
+                            m.write('%s\t%s\t%s\tfill_color=%s\n' % (record.id,
+                                                                     start,
+                                                                     end,
+                                                                     col))
                     elif feature.type == 'rRNA' or feature.type == 'tRNA':
                         if feature.location.strand == '1':
-                            p.write('%s\t%s\t%s\tfill_color=red\n' % (record.name,
-                                                      start,
-                                                      end))
+                            p.write('%s\t%s\t%s\tfill_color=red\n' % (record.id,
+                                                                      start,
+                                                                      end))
                         else:
-                            m.write('%s\t%s\t%s\tfill_color=red\n' % (record.name,
-                                                      start,
-                                                      end))
+                            m.write('%s\t%s\t%s\tfill_color=red\n' % (record.id,
+                                                                      start,
+                                                                      end))
                     else:
                         pass
         m.close()
@@ -1154,16 +1146,16 @@ class Fasta2circos():
             for contig in contig2coverage:
                 # split list by chunks of 1000
                 mychunks = [i for i in chunks(contig2coverage[contig], window)]
-                print 'depth size!!!', len(contig2coverage[contig]), '--------------------------------------'
-                print 'n chunks', len(mychunks)
-                print 'median depth all', all_contigs_median
+                print ('depth size!!!', len(contig2coverage[contig]), '--------------------------------------')
+                print ('n chunks', len(mychunks))
+                print ('median depth all', all_contigs_median)
                 for i, cov_list in enumerate(mychunks):
-                    #print cov_list
+                    # print cov_list
                     median_depth = numpy.median(cov_list)
-                    if median_depth > (2*all_contigs_median):
-                        median_depth = 2*all_contigs_median
-                    g.write("%s\t%s\t%s\t%s\n" % (contig, (i*window)+self.contigs_add[contig][0],
-                                                  ((i*window)+window-1)+self.contigs_add[contig][0],
+                    if median_depth > (2 * all_contigs_median):
+                        median_depth = 2 * all_contigs_median
+                    g.write("%s\t%s\t%s\t%s\n" % (contig, (i * window) + self.contigs_add[contig][0],
+                                                  ((i * window) + window - 1) + self.contigs_add[contig][0],
                                                   median_depth))
         return all_contigs_median
 
@@ -1171,30 +1163,36 @@ class Fasta2circos():
 if __name__ == '__main__':
     ###Argument handling.
     arg_parser = argparse.ArgumentParser(description='');
-    #arg_parser.add_argument("coords_input", help="Directory to show-coords tab-delimited input file.");
+    # arg_parser.add_argument("coords_input", help="Directory to show-coords tab-delimited input file.");
     arg_parser.add_argument("-r", "--fasta1", help="reference fasta")
     arg_parser.add_argument("-q", "--fasta2", help="query fasta", nargs='+')
-    arg_parser.add_argument("-fr", "--filterr", action="store_false", help="do not remove reference sequences without any similarity from the plot (default False)")
-    arg_parser.add_argument("-fq", "--filterq", action="store_false", help="do not remove query sequences without any similarity from the plot (default False)")
+    arg_parser.add_argument("-fr", "--filterr", action="store_false",
+                            help="do not remove reference sequences without any similarity from the plot (default False)")
+    arg_parser.add_argument("-fq", "--filterq", action="store_false",
+                            help="do not remove query sequences without any similarity from the plot (default False)")
     arg_parser.add_argument("-l", "--link", help="link circos and not heatmap circos", action="store_true")
     arg_parser.add_argument("-s", "--samtools_depth", help="samtools depth file", nargs="+")
     arg_parser.add_argument("-o", "--output_name", help="output circos pefix", default="nucmer2circos")
     arg_parser.add_argument("-g", "--gaps", help="highlight gaps", action="store_true")
     arg_parser.add_argument("-gb", "--genbank", help="add ORF based on GBK file", default=False)
     arg_parser.add_argument("-b", "--blast", help="highlight blast hits (-outfmt 6)")
-    arg_parser.add_argument("-n", "--highlight", help="highlight instead of heatmap corresponding list of records", nargs="+")
-    arg_parser.add_argument("-a", "--algo", help="algorythm to use to compare the genome (megablast, nucmer or promer)", default="nucmer")
+    arg_parser.add_argument("-n", "--highlight", help="highlight instead of heatmap corresponding list of records",
+                            nargs="+")
+    arg_parser.add_argument("-a", "--algo", help="algorythm to use to compare the genome (megablast, nucmer or promer)",
+                            default="nucmer")
     arg_parser.add_argument("-m", "--min_gap_size", help="minimum gap size to consider", default=1000)
     arg_parser.add_argument("-bn", '--blastn', action="store_true", help="excute blastn and not blastp")
     arg_parser.add_argument("-w", '--window', type=int, help="window size (default=1000)", default=1000)
     arg_parser.add_argument("-ss", '--secretion_systems', type=str, help="macsyfinder table", default=False)
-    arg_parser.add_argument("-c", '--condensed', action="store_true", help="condensed display (for mor tracks)", default=False)
-    arg_parser.add_argument("-lf", '--label_file', type=str, help="label file ==> tab file with: contig, start, end label (and color)", default=False)
+    arg_parser.add_argument("-c", '--condensed', action="store_true", help="condensed display (for mor tracks)",
+                            default=False)
+    arg_parser.add_argument("-lf", '--label_file', type=str,
+                            help="label file ==> tab file with: contig, start, end label (and color)", default=False)
 
     args = arg_parser.parse_args()
 
     if args.highlight is None:
-        args.highlight=[]
+        args.highlight = []
     ###Variable Definitions
 
     ##Run main
@@ -1218,4 +1216,4 @@ if __name__ == '__main__':
 
     circosf.write_circos_files(circosf.config, circosf.brewer_conf)
     circosf.run_circos(out_prefix=args.output_name)
-    #circosf.clean_tmp_files()
+    # circosf.clean_tmp_files()
