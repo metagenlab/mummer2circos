@@ -49,7 +49,8 @@ class Fasta2circos():
                  window_size=1000,
                  secretion_systems=False,
                  condensed_tracks=False,
-                 label_file=False):
+                 label_file=False,
+                 locus_taxonomy=False):
 
         import nucmer_utility
         import os
@@ -64,6 +65,10 @@ class Fasta2circos():
         self.working_dir = os.getcwd()
         self.last_track = 0.99
         self.window_size = window_size
+        self.locus2taxo_color = None
+
+        if locus_taxonomy:
+            self.parse_taxonomy_file(locus_taxonomy)
 
         if algo == "nucmer":
             print ("fasta1", fasta1)
@@ -455,6 +460,41 @@ class Fasta2circos():
 
         """
 
+    def parse_taxonomy_file(self, file_path):
+
+        match_color = 'red'
+        match_color_2 = 'spectral-5-div-5'
+        match_other_color = 'green'
+        no_match_color = 'grey_a1'
+        match_taxon_2 = ''
+
+
+        self.locus2taxo_color = {}
+        with open(file_path, 'r') as f:
+            for n, row in enumerate(f):
+                if n == 0:
+                    if row[0] == '#':
+                        match_taxon = row.rstrip()[1:]
+                        print 'match_taxon', match_taxon
+                    else:
+                        raise('Taxon rto search for should be indicated as comment on the first line: #Chlamydiae')
+                elif n == 1:
+                    if row[0] == '#':
+                        match_taxon_2 = row.rstrip()[1:]
+                else:
+                    data = row.rstrip().split('\t')
+                    if len(data) == 1:
+                        self.locus2taxo_color[data[0]] = no_match_color
+                    else:
+                        if data[1] == match_taxon:
+                            self.locus2taxo_color[data[0]] = match_color
+                        elif data[1] == match_taxon_2:
+                            self.locus2taxo_color[data[0]] = match_color_2
+                        else:
+                            self.locus2taxo_color[data[0]] = match_other_color
+
+
+
     def blast2circos_file(self, blast, reference, blastn=False):
 
         '''
@@ -483,7 +523,9 @@ class Fasta2circos():
                                                  db=reference,
                                                  evalue=0.00000001,  # 0.001
                                                  outfmt=6,
-                                                 out="blast.tmp")
+                                                 out="blast.tmp",
+                                                 max_target_seqs=1)
+            print blast_cline
         else:
             blast_cline = NcbiblastnCommandline(query=blast,
                                                 db=reference,
@@ -500,7 +542,7 @@ class Fasta2circos():
         # print c
 
         blast2data, queries = blast_utils.remove_blast_redundancy(["blast.tmp"], check_overlap=False)
-
+		
         o = open('circos_blast.txt', "w")
         l = open('circos_blast_labels.txt', "w")
 
@@ -521,7 +563,7 @@ class Fasta2circos():
         for contig in blast2data:
             cname = re.sub("\|", "", contig)
             for gene in blast2data[contig]:
-                if float(blast2data[contig][gene][0]) > 30:  # 80,20
+                if float(blast2data[contig][gene][0]) > 90:  # 80,20
                     location = sorted(blast2data[contig][gene][1:3])
                     o.write("%s\t%s\t%s\n" % (
                     contig, location[0] + self.contigs_add[cname][0], location[1] + self.contigs_add[cname][0]))
@@ -1101,6 +1143,12 @@ class Fasta2circos():
                         # else:
                         col = 'grey_a1'
 
+                        if self.locus2taxo_color:
+                            try:
+                                col = self.locus2taxo_color[feature.qualifiers['locus_tag'][0]]
+                            except KeyError:
+                                raise('Locus not found. Taxonomy file shoud report locus_tag2taxonomy correspondance.')
+
                         if int(feature.location.strand) == 1:
 
                             p.write('%s\t%s\t%s\tfill_color=%s\n' % (record.id,
@@ -1112,6 +1160,7 @@ class Fasta2circos():
                                                                      start,
                                                                      end,
                                                                      col))
+
                     elif feature.type == 'rRNA' or feature.type == 'tRNA':
                         if feature.location.strand == '1':
                             p.write('%s\t%s\t%s\tfill_color=red\n' % (record.id,
@@ -1153,7 +1202,7 @@ class Fasta2circos():
                     # print cov_list
                     median_depth = numpy.median(cov_list)
                     if median_depth > (2 * all_contigs_median):
-                        median_depth = 2 * all_contigs_median
+                        median_depth = (2 * all_contigs_median) + 1
                     g.write("%s\t%s\t%s\t%s\n" % (contig, (i * window) + self.contigs_add[contig][0],
                                                   ((i * window) + window - 1) + self.contigs_add[contig][0],
                                                   median_depth))
@@ -1166,7 +1215,7 @@ if __name__ == '__main__':
     # arg_parser.add_argument("coords_input", help="Directory to show-coords tab-delimited input file.");
     arg_parser.add_argument("-r", "--fasta1", help="reference fasta")
     arg_parser.add_argument("-q", "--fasta2", help="query fasta", nargs='+')
-    arg_parser.add_argument("-fr", "--filterr", action="store_false",
+    arg_parser.add_argument("-fr", "--filterr", action="store_true",
                             help="do not remove reference sequences without any similarity from the plot (default False)")
     arg_parser.add_argument("-fq", "--filterq", action="store_false",
                             help="do not remove query sequences without any similarity from the plot (default False)")
@@ -1188,6 +1237,9 @@ if __name__ == '__main__':
                             default=False)
     arg_parser.add_argument("-lf", '--label_file', type=str,
                             help="label file ==> tab file with: contig, start, end label (and color)", default=False)
+    arg_parser.add_argument("-lt", '--locus_taxonomy', type=str,
+                            help="Color locus based on taxonomy: tab delimited file with: locus\tphylum. " \
+                                 " Color locus matching the Taxon set in comment as the first row (#Chlamydiae)", default=False)
 
     args = arg_parser.parse_args()
 
@@ -1212,7 +1264,8 @@ if __name__ == '__main__':
                            window_size=args.window,
                            secretion_systems=args.secretion_systems,
                            condensed_tracks=args.condensed,
-                           label_file=args.label_file)
+                           label_file=args.label_file,
+                           locus_taxonomy=args.locus_taxonomy)
 
     circosf.write_circos_files(circosf.config, circosf.brewer_conf)
     circosf.run_circos(out_prefix=args.output_name)
