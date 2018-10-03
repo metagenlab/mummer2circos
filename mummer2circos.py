@@ -58,10 +58,6 @@ class Fasta2circos():
         import gbk2circos
 
         self.contigs_add = {}
-        print ("fasta1", fasta1)
-        print ("fasta2", len(fasta2), fasta2)
-        print ("highlight list", highlight_list)
-        print ("heatmap", heatmap)
         self.working_dir = os.getcwd()
         self.last_track = 0.99
         self.window_size = window_size
@@ -69,19 +65,19 @@ class Fasta2circos():
 
         if locus_taxonomy:
             self.parse_taxonomy_file(locus_taxonomy)
-
-        if algo == "nucmer":
-            print ("fasta1", fasta1)
-            nucmer_utility.execute_promer(fasta1, fasta2, algo="nucmer")
-        elif algo == "megablast":
-            self.execute_megablast(fasta1, fasta2)
-        elif algo == "promer":
-            nucmer_utility.execute_promer(fasta1, fasta2, algo="promer")
+        if fasta2 is not None:
+            if algo == "nucmer":
+                print ("fasta1", fasta1)
+                nucmer_utility.execute_promer(fasta1, fasta2, algo="nucmer")
+            elif algo == "megablast":
+                self.execute_megablast(fasta1, fasta2)
+            elif algo == "promer":
+                nucmer_utility.execute_promer(fasta1, fasta2, algo="promer")
+        else: 
+             fasta2=[]
         if not heatmap:
-            outname = os.path.basename(fasta2[0]).split('.')[0]
-            hit_list, query_list = self.get_link("%s.coords" % outname, algo=algo)
-
-
+                outname = os.path.basename(fasta2[0]).split('.')[0]
+                hit_list, query_list = self.get_link("%s.coords" % outname, algo=algo)
         else:
 
             # coords for cumulated coorginates
@@ -210,12 +206,17 @@ class Fasta2circos():
                                                rules=supp)
 
             if label_file:
+                if blast:
+                    dist="288"
+                else:
+                    dist="120"
+
                 supp = '''
                         label_snuggle             = yes
 
                         max_snuggle_distance            = 20r
                         show_links     = yes
-                        link_dims      = 10p,288p,30p,4p,4p
+                        link_dims      = 10p,%sp,30p,4p,4p
                         link_thickness = 2p
                         link_color     = blue
 
@@ -224,7 +225,7 @@ class Fasta2circos():
 
                         padding  = 0p
                         rpadding = 0p
-                        '''
+                        ''' % dist
 
                 o = open('circos.labels.tab', 'w')
                 with open(label_file, 'r') as f:
@@ -364,7 +365,8 @@ class Fasta2circos():
                 '''
 
         if heatmap:
-            c1, c2, c3, c4 = self.get_karyotype_from_fasta(fasta1, fasta2, list(set(all_hit_list)),
+            print('no heatmap!')
+            self.get_karyotype_from_fasta(fasta1, fasta2, list(set(all_hit_list)),
                                                            list(set(all_query_list)), filter_ref, filter_query,
                                                            both_fasta=False)
             # self.config = self.get_circos_config(c1, c2, c3, c4, link=False, heat=True)
@@ -382,6 +384,7 @@ class Fasta2circos():
                     self.last_track -= 0.25
 
         else:
+            print('heatmap!')
             # c1 last_seq_id
             # c2 first_seq_id
             # c3 mid1 last hit id
@@ -475,7 +478,7 @@ class Fasta2circos():
                 if n == 0:
                     if row[0] == '#':
                         match_taxon = row.rstrip()[1:]
-                        print 'match_taxon', match_taxon
+                        print ('match_taxon', match_taxon)
                     else:
                         raise('Taxon rto search for should be indicated as comment on the first line: #Chlamydiae')
                 elif n == 1:
@@ -525,7 +528,7 @@ class Fasta2circos():
                                                  outfmt=6,
                                                  out="blast.tmp",
                                                  max_target_seqs=1)
-            print blast_cline
+            print (blast_cline)
         else:
             blast_cline = NcbiblastnCommandline(query=blast,
                                                 db=reference,
@@ -616,7 +619,10 @@ class Fasta2circos():
                 r1 = r1 - 0.020  # 046
                 # r0 = r0-0.011
 
-        self.last_track = r0
+        try:
+            self.last_track = r0
+        except:
+            pass
         self.config = self.circos_reference.get_file()
 
         # t = open('circos.config', "w")
@@ -908,7 +914,8 @@ class Fasta2circos():
         import re
 
         fasta_data1 = [i for i in SeqIO.parse(open(fasta1), "fasta")]
-        fasta_data2 = [i for i in SeqIO.parse(open(fasta2[0]), "fasta")]
+        if fasta2:
+            fasta_data2 = [i for i in SeqIO.parse(open(fasta2[0]), "fasta")]
 
         self.contig2start_psoition = {}
 
@@ -956,11 +963,14 @@ class Fasta2circos():
                             f.write("chr - %s %s %s %s spectral-5-div-%s\n" % (name, name, 0, len(record), i))
                     else:
                         f.write("chr - %s %s %s %s spectral-5-div-%s\n" % (name, name, 0, len(record), i))
-        n1 = re.sub("\|", "", fasta_data2[-1].name)
-        n3 = re.sub("\|", "", fasta_data2[0].name)
-        if not 'n2' in locals():
-            n2 = n1
-        return (n1, n2, n3, n4)
+        if fasta2:
+            n1 = re.sub("\|", "", fasta_data2[-1].name)
+            n3 = re.sub("\|", "", fasta_data2[0].name)
+            if not 'n2' in locals():
+                n2 = n1
+            return (n1, n2, n3, n4)
+        else:
+            return None
 
     def execute_megablast(self, fasta1, fasta2):
         import os
@@ -1203,9 +1213,14 @@ class Fasta2circos():
                     median_depth = numpy.median(cov_list)
                     if median_depth > (2 * all_contigs_median):
                         median_depth = (2 * all_contigs_median) + 1
-                    g.write("%s\t%s\t%s\t%s\n" % (contig, (i * window) + self.contigs_add[contig][0],
+                    try:
+                        g.write("%s\t%s\t%s\t%s\n" % (contig, (i * window) + self.contigs_add[contig][0],
                                                   ((i * window) + window - 1) + self.contigs_add[contig][0],
                                                   median_depth))
+                    except:
+                        # contig present in depth file missing from fasta file
+                        # skip as the case might happen (eg mapping before contig filtering based on depth)
+                        continue
         return all_contigs_median
 
 
@@ -1248,8 +1263,12 @@ if __name__ == '__main__':
     ###Variable Definitions
 
     ##Run main
+    if args.fasta2 is None:
+        fasta2=[]
+    else:
+        fasta2=args.fasta2
     circosf = Fasta2circos(args.fasta1,
-                           args.fasta2,
+                           fasta2,
                            args.filterr,
                            args.filterq,
                            heatmap=args.link,
