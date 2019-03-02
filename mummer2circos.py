@@ -50,7 +50,8 @@ class Fasta2circos():
                  secretion_systems=False,
                  condensed_tracks=False,
                  label_file=False,
-                 locus_taxonomy=False):
+                 locus_taxonomy=False,
+                 blast_identity_cutoff=80):
 
         import nucmer_utility
         import os
@@ -73,7 +74,7 @@ class Fasta2circos():
                 self.execute_megablast(fasta1, fasta2)
             elif algo == "promer":
                 nucmer_utility.execute_promer(fasta1, fasta2, algo="promer")
-        else: 
+        else:
              fasta2=[]
         if not heatmap:
                 outname = os.path.basename(fasta2[0]).split('.')[0]
@@ -179,7 +180,7 @@ class Fasta2circos():
                     self.last_track -= 0.03
 
             if blast:
-                self.blast2circos_file(blast, fasta1, blastn=blastn)
+                self.blast2circos_file(blast, fasta1, blastn=blastn, identity_cutoff=blast_identity_cutoff)
 
                 # self.circos_reference.add_highlight("circos_blast.txt",
                 #                               'red',
@@ -189,7 +190,7 @@ class Fasta2circos():
                 # snuggle_refine                 = yes
                 supp = '''
                         label_snuggle             = yes
-                        
+
                         max_snuggle_distance            = 20r
                         show_links     = yes
                         link_dims      = 10p,88p,30p,4p,4p
@@ -498,7 +499,7 @@ class Fasta2circos():
 
 
 
-    def blast2circos_file(self, blast, reference, blastn=False):
+    def blast2circos_file(self, blast, reference, blastn=False, identity_cutoff=80):
 
         '''
 
@@ -545,7 +546,7 @@ class Fasta2circos():
         # print c
 
         blast2data, queries = blast_utils.remove_blast_redundancy(["blast.tmp"], check_overlap=False)
-		
+
         o = open('circos_blast.txt', "w")
         l = open('circos_blast_labels.txt', "w")
 
@@ -566,7 +567,7 @@ class Fasta2circos():
         for contig in blast2data:
             cname = re.sub("\|", "", contig)
             for gene in blast2data[contig]:
-                if float(blast2data[contig][gene][0]) > 90:  # 80,20
+                if float(blast2data[contig][gene][0]) >= identity_cutoff:  # 80,20
                     location = sorted(blast2data[contig][gene][1:3])
                     o.write("%s\t%s\t%s\n" % (
                     contig, location[0] + self.contigs_add[cname][0], location[1] + self.contigs_add[cname][0]))
@@ -1240,6 +1241,7 @@ if __name__ == '__main__':
     arg_parser.add_argument("-g", "--gaps", help="highlight gaps", action="store_true")
     arg_parser.add_argument("-gb", "--genbank", help="add ORF based on GBK file", default=False)
     arg_parser.add_argument("-b", "--blast", help="highlight blast hits (-outfmt 6)")
+    arg_parser.add_argument("-bc", '--blast_identity_cutoff', type=int, help="Blast identity cutoff", default=80)
     arg_parser.add_argument("-n", "--highlight", help="highlight instead of heatmap corresponding list of records",
                             nargs="+")
     arg_parser.add_argument("-a", "--algo", help="algorythm to use to compare the genome (megablast, nucmer or promer)",
@@ -1255,6 +1257,7 @@ if __name__ == '__main__':
     arg_parser.add_argument("-lt", '--locus_taxonomy', type=str,
                             help="Color locus based on taxonomy: tab delimited file with: locus\tphylum. " \
                                  " Color locus matching the Taxon set in comment as the first row (#Chlamydiae)", default=False)
+
 
     args = arg_parser.parse_args()
 
@@ -1284,7 +1287,8 @@ if __name__ == '__main__':
                            secretion_systems=args.secretion_systems,
                            condensed_tracks=args.condensed,
                            label_file=args.label_file,
-                           locus_taxonomy=args.locus_taxonomy)
+                           locus_taxonomy=args.locus_taxonomy,
+                           blast_identity_cutoff=args.blast_identity_cutoff)
 
     circosf.write_circos_files(circosf.config, circosf.brewer_conf)
     circosf.run_circos(out_prefix=args.output_name)
