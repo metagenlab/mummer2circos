@@ -3,24 +3,6 @@
 
 Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignments. Generate *SVG* and *PNG* images with circos (http://circos.ca/).
 
-# Installation
-
-- install miniconda 2.7
-
-```
-#pip install mysql-python
-#conda install -c etetoolkit ete2
-conda install circos
-conda install -c bioconda mummer
-conda install -c bioconda blast
-conda install -c conda-forge matplotlib
-conda install -c conda-forge/label/broken matplotlib
-conda install -c conda-forge/label/testing matplotlib
-conda install -c conda-forge/label/rc matplotlib
-```
-
-- add metagenlab/utils to pythonpath
-
 # Alignment method
 
 - the whole genome alignments can be done with three different methods: megablast, nucmer or promer
