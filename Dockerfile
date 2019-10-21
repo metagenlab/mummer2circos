@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN conda install conda=4.7.12
 
 COPY env.yaml ./
-RUN conda env create -f env.yml
+RUN conda env create -f env.yaml
 RUN conda clean --all --yes
 
 RUN mkdir /usr/local/bin/mummer2circos
@@ -29,7 +29,9 @@ WORKDIR /usr/local/bin/mummer2circos
 
 COPY mummer2circos.py ./
 
-RUN git clone https://github.com/metagenlab/TPutils.git /usr/local/bin 
+WORKDIR /usr/local/bin/
+
+RUN git clone https://github.com/metagenlab/TPutils.git
 
 RUN conda init bash
 ENTRYPOINT ["/bin/bash"]
