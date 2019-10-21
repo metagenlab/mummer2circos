@@ -17,17 +17,23 @@ MAINTAINER Trestan Pillonel
 ################## INSTALLATION ######################
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN conda config --add channels bioconda
-RUN conda config --add channels plotly
+RUN conda install conda=4.7.12
 
-RUN conda update conda
-
-COPY python-r.yml ./
+COPY env.yaml ./
 RUN conda env create -f env.yml
 RUN conda clean --all --yes
+
+RUN mkdir /usr/local/bin/mummer2circos
+
+WORKDIR /usr/local/bin/mummer2circos
+
+COPY mummer2circos.py ./
+
+RUN git clone https://github.com/metagenlab/TPutils.git /usr/local/bin 
 
 RUN conda init bash
 ENTRYPOINT ["/bin/bash"]
 WORKDIR /data/
 ENV PATH /opt/conda/envs/mummer2circos/bin:$PATH
 ENV PATH /usr/local/bin/mummer2circos/:$PATH
+ENV PATH /usr/local/bin/TPutils/:$PATH
