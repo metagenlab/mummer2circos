@@ -39,3 +39,4 @@ WORKDIR /data/
 ENV PATH /opt/conda/envs/mummer2circos/bin:$PATH
 ENV PATH /usr/local/bin/mummer2circos/:$PATH
 ENV PATH /usr/local/bin/TPutils/:$PATH
+ENV PYTHONPATH /usr/local/bin/TPutils/:$PYTHONPATH
