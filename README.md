@@ -7,7 +7,7 @@ Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignme
 ## Method 1: Installation with conda
 
 
-```
+```bash
 # create the environment
 conda env create -f env.yaml
 # activate the environment
@@ -20,13 +20,13 @@ Dependency: [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.h
 
 ### build the image 
 
-```
+```bash
 singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 ```
 
 ### example
 
-```
+```bash
 singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.fna>  -l
 ```
 
@@ -45,13 +45,17 @@ singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.f
 - *-l* mendatory option to build circular plots
 - genome tracks are ordered based on the order of the input query fasta files
 
-```mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*fna```
+```bash
+mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*fna
+```
 
 ![Simple plot](examples/images/nucmer2circos_simple.png)
 
 # Condensed tracks
 
-```mummer2circos -l -c -r genomes/NZ_CP008827.fna -q genomes/*fna```
+```bash
+mummer2circos -l -c -r genomes/NZ_CP008827.fna -q genomes/*fna
+```
 
 ![Simple plot](examples/images/nucmer2circos_condensed.png)
 
@@ -61,7 +65,9 @@ singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.f
 
 ```LOCUS       NZ_CP008828            15096 bp    DNA              CON 16-AUG-2015```
 
-```mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk```
+```bash
+mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk
+```
 
 ![Simple plot](examples/images/nucmer2circos_gene_tracks.png)
 
@@ -70,7 +76,9 @@ singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.f
 - given a fasta file of protein of interest, label the BBH of each amino acid sequence on the circular plot
 - the fasta headers are used as labels (see example file VF.faa)
 
-``` mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa ```
+```bash
+mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa 
+```
 
 ![Simple plot](examples/images/nucmer2circos_labels.png)
 
@@ -81,7 +89,9 @@ singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.f
 - regions with depth higher than 2 times depth are croped to that limit and coloured in green (deal with highly repeated sequences).
 - regions with depth lower than half of the median depth are coloured in red.
 
-``` mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth ```
+```bash
+mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth
+```
 
 ![Simple plot](examples/images/nucmer2circos_depth.png)
 
@@ -90,7 +100,9 @@ singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.f
 - structure: LOCUS start stop label (see labels.txt)
 - labels can not include spaces
 
-``` mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt```
+```bash
+mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt
+```
 
 ![Simple plot](examples/images/nucmer2circos_labels_coord.png)
 
@@ -98,8 +110,6 @@ singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.f
 
 - overlapping ranges will overlap on the figure
 - TODO: add the possibility to input multiple range files that would be displayed on different tracks
-
-
 
 
 
