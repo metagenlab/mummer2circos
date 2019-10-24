@@ -1,7 +1,29 @@
-
 # Description
 
 Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignments. Generate *SVG* and *PNG* images with circos (http://circos.ca/).
+
+# Installation
+
+## Installation with conda
+
+
+```
+conda env create -f env.yaml
+```
+
+### Method 2: Singularity container   
+
+Dependency: [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)
+
+```
+singularity exec mummer2circos.simg mummer2circos.py -r <reference.fna> -q <query.fna>  -l
+```
+
+### build the image 
+
+```
+singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
+```
 
 # Alignment method
 
