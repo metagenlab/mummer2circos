@@ -179,7 +179,7 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            'mummer2circos=mummer2circos:mummer2circos',
+            'mummer2circos=mummer2circos:main',
         ],
     },
 
