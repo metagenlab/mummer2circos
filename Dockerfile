@@ -5,9 +5,8 @@ FROM continuumio/miniconda3:4.7.10
  
 LABEL base.image="miniconda3:4.7.10"
 LABEL version="1"
-LABEL software="diag-pipelines-python-r"
+LABEL software="mummer2circos"
 LABEL software.version="1.0"
-LABEL description="combined python and r packages for diag pipelines"
 LABEL tags="Genomics"
  
 ################## MAINTAINER ######################
