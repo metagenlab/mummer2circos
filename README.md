@@ -4,20 +4,19 @@ Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignme
 
 # Installation
 
-## Installation with conda
+## Method 1: Installation with conda
 
 
 ```
+# create the environment
 conda env create -f env.yaml
+# activate the environment
+conda activate mummer2circos
 ```
 
-### Method 2: Singularity container   
+## Method 2: Singularity container   
 
 Dependency: [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)
-
-```
-singularity exec mummer2circos.simg mummer2circos.py -r <reference.fna> -q <query.fna>  -l
-```
 
 ### build the image 
 
@@ -25,12 +24,19 @@ singularity exec mummer2circos.simg mummer2circos.py -r <reference.fna> -q <quer
 singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 ```
 
+### example
+
+```
+singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.fna>  -l
+```
+
+
 # Alignment method
 
 - the whole genome alignments can be done with three different methods: megablast, nucmer or promer
 - use the parameter *-a* to indicate which method to use. Nucmer is the default option.
 
-```mummer2circos.py -l -a promer ...```
+```mummer2circos -l -a promer ...```
 
 # Simple plot
 
@@ -39,13 +45,13 @@ singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 - *-l* mendatory option to build circular plots
 - genome tracks are ordered based on the order of the input query fasta files
 
-```mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*fna```
+```mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*fna```
 
 ![Simple plot](examples/images/nucmer2circos_simple.png)
 
 # Condensed tracks
 
-```mummer2circos.py -l -c -r genomes/NZ_CP008827.fna -q genomes/*fna```
+```mummer2circos -l -c -r genomes/NZ_CP008827.fna -q genomes/*fna```
 
 ![Simple plot](examples/images/nucmer2circos_condensed.png)
 
@@ -55,7 +61,7 @@ singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 
 ```LOCUS       NZ_CP008828            15096 bp    DNA              CON 16-AUG-2015```
 
-```mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk```
+```mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk```
 
 ![Simple plot](examples/images/nucmer2circos_gene_tracks.png)
 
@@ -64,7 +70,7 @@ singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 - given a fasta file of protein of interest, label the BBH of each amino acid sequence on the circular plot
 - the fasta headers are used as labels (see example file VF.faa)
 
-``` mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa ```
+``` mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa ```
 
 ![Simple plot](examples/images/nucmer2circos_labels.png)
 
@@ -75,7 +81,7 @@ singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 - regions with depth higher than 2 times depth are croped to that limit and coloured in green (deal with highly repeated sequences).
 - regions with depth lower than half of the median depth are coloured in red.
 
-``` mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth ```
+``` mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth ```
 
 ![Simple plot](examples/images/nucmer2circos_depth.png)
 
@@ -84,7 +90,7 @@ singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 - structure: LOCUS start stop label (see labels.txt)
 - labels can not include spaces
 
-``` mummer2circos.py -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt```
+``` mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt```
 
 ![Simple plot](examples/images/nucmer2circos_labels_coord.png)
 
@@ -92,8 +98,6 @@ singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.0
 
 - overlapping ranges will overlap on the figure
 - TODO: add the possibility to input multiple range files that would be displayed on different tracks
-
-
 
 
 

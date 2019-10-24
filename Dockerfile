@@ -22,20 +22,7 @@ COPY env.yaml ./
 RUN conda env create -f env.yaml
 RUN conda clean --all --yes
 
-RUN mkdir /usr/local/bin/mummer2circos
-
-WORKDIR /usr/local/bin/mummer2circos
-
-COPY mummer2circos.py ./
-
-WORKDIR /usr/local/bin/
-
-RUN git clone https://github.com/metagenlab/TPutils.git
-
 RUN conda init bash
 ENTRYPOINT ["/bin/bash"]
 WORKDIR /data/
 ENV PATH /opt/conda/envs/mummer2circos/bin:$PATH
-ENV PATH /usr/local/bin/mummer2circos/:$PATH
-ENV PATH /usr/local/bin/TPutils/:$PATH
-ENV PYTHONPATH /usr/local/bin/TPutils/:$PYTHONPATH
