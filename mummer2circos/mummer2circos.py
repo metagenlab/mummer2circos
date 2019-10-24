@@ -9,7 +9,7 @@
 
 import sys;
 import re;
-import circos_utils
+from TPutils import circos_utils
 import random
 import string
 
@@ -52,10 +52,10 @@ class Fasta2circos():
                  locus_taxonomy=False,
                  blast_identity_cutoff=80):
 
-        import nucmer_utility
+        from TPutils import nucmer_utility
         import os
         from Bio import SeqIO
-        import gbk2circos
+        from TPplots import gbk2circos
 
         self.contigs_add = {}
         self.working_dir = os.getcwd()
@@ -266,7 +266,7 @@ class Fasta2circos():
                                                color="black", rules=supp)
 
             if gc:
-                import GC
+                from TPutils import GC
                 from Bio import SeqIO
 
                 fasta_records = list(SeqIO.parse(fasta1, 'fasta'))
@@ -511,8 +511,8 @@ class Fasta2circos():
         :return:
         '''
 
-        import shell_command
-        import blast_utils
+        from TPutils import shell_command
+        from TPutils import blast_utils
         from Bio.Blast.Applications import NcbitblastnCommandline
         from Bio.Blast.Applications import NcbiblastnCommandline
 
@@ -662,7 +662,7 @@ class Fasta2circos():
         self.config = self.circos_reference.get_file()
 
     def run_circos(self, config_file="circos.config", out_prefix="circos"):
-        import shell_command
+        from TPutils import shell_command
         cmd = 'circos -outputfile %s.svg -conf %s' % (out_prefix, config_file)
         a, b, c = shell_command.shell_command(cmd)
         sys.stdout.write(str(a))
@@ -974,7 +974,7 @@ class Fasta2circos():
 
     def execute_megablast(self, fasta1, fasta2):
         import os
-        import shell_command
+        from TPutils import shell_command
         for one_fasta in fasta2:
             out_prefix = os.path.basename(one_fasta).split('.')[0]
 

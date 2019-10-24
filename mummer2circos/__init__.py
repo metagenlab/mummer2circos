@@ -1,6 +1,6 @@
 
 def main():
-    import mummer2circos
+    from mummer2circos import mummer2circos
     import argparse
     ###Argument handling.
     arg_parser = argparse.ArgumentParser(description='');
