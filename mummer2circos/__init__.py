@@ -1,6 +1,7 @@
 
 def main():
     import mummer2circos
+    import argparse
     ###Argument handling.
     arg_parser = argparse.ArgumentParser(description='');
     # arg_parser.add_argument("coords_input", help="Directory to show-coords tab-delimited input file.");
