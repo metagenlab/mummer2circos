@@ -517,7 +517,7 @@ class Fasta2circos():
         from Bio.Blast.Applications import NcbiblastnCommandline
 
         # todo catch IO errors, orther potential errors
-        a, b, c = shell_command.shell_command('formatdb -i %s -p F' % (reference))
+        a, b, c = shell_command.shell_command('makeblastdb -in %s -dbtype nucl' % (reference))
         # print a
         # print b
         print (c)
@@ -978,7 +978,7 @@ class Fasta2circos():
         for one_fasta in fasta2:
             out_prefix = os.path.basename(one_fasta).split('.')[0]
 
-            cmd1 = "formatdb -i %s -p F" % one_fasta
+            cmd1 = "makeblastdb -in %s -dbtype nucl" % one_fasta
             cmd2 = 'blastn -task megablast -query %s -db %s -evalue 1e-5 -outfmt 6 -out blast_result_%s.tab' % (fasta1,
                                                                                                                 one_fasta,
                                                                                                                 out_prefix)
