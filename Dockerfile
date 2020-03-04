@@ -6,7 +6,7 @@ FROM continuumio/miniconda3:4.7.10
 LABEL base.image="miniconda3:4.7.10"
 LABEL version="1"
 LABEL software="mummer2circos"
-LABEL software.version="1.0"
+LABEL software.version="1.1"
 LABEL tags="Genomics"
  
 ################## MAINTAINER ######################

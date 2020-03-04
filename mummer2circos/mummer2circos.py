@@ -128,7 +128,7 @@ class Fasta2circos():
 
                     hit_list, query_list = nucmer_utility.coord_file2circos_heat_file("%s.coords" % out_prefix,
                                                                                       self.contigs_add, algo=algo)
-                    contig2start_stop_list = nucmer_utility.delta_file2start_stop_list("%s.delta" % out_prefix,
+                    contig2start_stop_list, coords_file = nucmer_utility.delta_file2start_stop_list("%s.delta" % out_prefix,
                                                                                        self.contigs_add, algo=algo,
                                                                                        minimum_identity=5)
 
