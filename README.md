@@ -86,7 +86,7 @@ mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_m
 
 - depth files can be generated from bam file using *samtools depth*
 - the labels used in the .depth file should be the same as the fasta header (see example files) 
-- regions with depth higher than 2 times depth are croped to that limit and coloured in green (deal with highly repeated sequences).
+- regions with depth higher than 2 times the median are croped to that limit and coloured in green (deal with highly repeated sequences).
 - regions with depth lower than half of the median depth are coloured in red.
 
 ```bash
