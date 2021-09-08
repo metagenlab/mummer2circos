@@ -101,10 +101,18 @@ mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_m
 - labels can not include spaces
 
 ```bash
-mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt
+mummer2circos -l -r genomes/NZ_CP008827.fna -q genomes/NZ_FO834906.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt
 ```
 
 ![Simple plot](examples/images/nucmer2circos_labels_coord.png)
+
+# show links between two genomes 
+
+```bash
+mummer2circos -r genomes/NZ_CP012745.fna -q genomes/*.fna -gb GCF_000281535_merged.gbk -b VF.faa -s GCF_000281535.depth -lf labels.txt
+```
+
+![Simple plot](examples/images/nucmer2circos_links.png)
 
 # Highlight specific ranges based on coordinate file
 
