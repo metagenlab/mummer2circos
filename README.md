@@ -21,7 +21,7 @@ Dependency: [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.h
 ### build the image 
 
 ```bash
-singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.1
+singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.2
 ```
 
 ### example
