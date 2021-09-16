@@ -133,8 +133,7 @@ class Fasta2circos():
                                                                                        minimum_identity=5)
 
                 elif algo == "megablast":
-                    hit_list, query_list, contig2start_stop_list = self.megablast2heatmap(
-                        "blast_result_%s.tab" % out_prefix, col=col)
+                    hit_list, query_list, contig2start_stop_list = self.megablast2heatmap("blast_result_%s.tab" % out_prefix, col=col)
                 else:
                     raise IOError('unknown algo!')
                 all_hit_list += hit_list
@@ -1094,7 +1093,8 @@ class Fasta2circos():
 
         contig2start_stop_list = {}
 
-        heatmap_file = os.path.basename(megablast_input).split('.')[0] + '.heat'
+        heatmap_file = os.path.basename(megablast_input).split('.')[0] + '.heat' 
+        heatmap_file = re.sub("blast_result_", "", heatmap_file)
         with open(heatmap_file, 'w') as f:
             i = 1
             hit_list = []
