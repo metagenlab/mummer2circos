@@ -1172,7 +1172,7 @@ class Fasta2circos():
                                                                      col))
 
                     elif feature.type == 'rRNA' or feature.type == 'tRNA':
-                        if feature.location.strand == '1':
+                        if feature.location.strand == 1:
                             p.write('%s\t%s\t%s\tfill_color=red\n' % (record.id,
                                                                       start,
                                                                       end))
