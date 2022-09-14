@@ -16,7 +16,7 @@ def main():
     arg_parser.add_argument("-o", "--output_name", help="output circos pefix", default="nucmer2circos")
     arg_parser.add_argument("-g", "--gaps", help="highlight gaps", action="store_true")
     arg_parser.add_argument("-gb", "--genbank", help="add ORF based on GBK file", default=False)
-    arg_parser.add_argument("-b", "--blast", help="highlight blast hits (-outfmt 6)")
+    arg_parser.add_argument("-b", "--blast", help="input fasta file (aa sequence) for BLAST")
     arg_parser.add_argument("-bc", '--blast_identity_cutoff', type=int, help="Blast identity cutoff", default=80)
     arg_parser.add_argument("-n", "--highlight", help="highlight instead of heatmap corresponding list of records",
                             nargs="+")
@@ -33,7 +33,7 @@ def main():
     arg_parser.add_argument("-lt", '--locus_taxonomy', type=str,
                             help="Color locus based on taxonomy: tab delimited file with: locus\tphylum. " \
                                  " Color locus matching the Taxon set in comment as the first row (#Chlamydiae)", default=False)
-
+    arg_parser.add_argument("-f", '--force', action="store_true", help="Don't prompt before every removal")
 
     args = arg_parser.parse_args()
 
@@ -64,9 +64,12 @@ def main():
                            condensed_tracks=args.condensed,
                            label_file=args.label_file,
                            locus_taxonomy=args.locus_taxonomy,
-                           blast_identity_cutoff=args.blast_identity_cutoff)
+                           blast_identity_cutoff=args.blast_identity_cutoff,
+                           force_data_dir=args.force)
 
     circosf.write_circos_files(circosf.config, circosf.brewer_conf)
-    circosf.run_circos(out_prefix=args.output_name)
+    circosf.run_circos(out_prefix=args.output_name, config_file="circos_data/circos.config")
+    if args.blast:
+        circosf.clean_tmp_files()
 
 
