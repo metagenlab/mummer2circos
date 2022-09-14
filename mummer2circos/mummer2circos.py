@@ -705,21 +705,21 @@ class Fasta2circos():
         if returncode == 0:
             logging.info(f"Circos plot generated sucessfully, see {out_prefix}.svg & {out_prefix}.png")
             if self.heatmap:
-                main_conf = ["- main configuration file:".ljust(25), "circos.config"]
-                gc_skew = ["- GC skew:".ljust(25), "circos_GC_skew.txt"]
-                gc_content = ["- GC content:".ljust(25), "circos_GC_content.txt"]
-                contigs_def = ["- Contigs definition:".ljust(25), "circos_contigs.txt"]
+                main_conf = ["- main configuration file:".ljust(35), "circos.config"]
+                gc_skew = ["- GC skew:".ljust(35), "circos_GC_skew.txt"]
+                gc_content = ["- GC content:".ljust(35), "circos_GC_content.txt"]
+                contigs_def = ["- Contigs definition:".ljust(35), "circos_contigs.txt"]
                 circos_files = [main_conf,contigs_def, gc_skew, gc_content]
                 if self.gbk2orf:
-                    circos_files.append(["- Reference genome ORFs strand -:".ljust(25), "circos_orf_minus.txt"])
-                    circos_files.append(["- Reference genome ORFs strand +:".ljust(25), "circos_orf_plus.txt"])
+                    circos_files.append(["- Reference genome ORFs strand -:".ljust(35), "circos_orf_minus.txt"])
+                    circos_files.append(["- Reference genome ORFs strand +:".ljust(35), "circos_orf_plus.txt"])
                 for n, heatmap_track in enumerate(self.genome_list):
-                    circos_files.append([f"- Heatmap track {n+1}:".ljust(25), heatmap_track])
+                    circos_files.append([f"- Heatmap track {n+1}:".ljust(35), heatmap_track])
                 if self.blast:
-                    circos_files.append([f"- Blast hits labels:".ljust(25), "circos_blast_labels.txt"])
+                    circos_files.append([f"- Blast hits labels:".ljust(35), "circos_blast_labels.txt"])
                 if self.samtools_depth:
                     for n, depth_track in enumerate(self.samtools_depth_track_list):
-                        circos_files.append([f"- Depth track {n+1}:".ljust(25), depth_track])
+                        circos_files.append([f"- Depth track {n+1}:".ljust(35), depth_track])
                 log_str = ['\t'.join(i) for i in circos_files]
                 logging.info(f"Circos files saved in {self.circos_data_dir}: \n\t" + '\n\t'.join(log_str))
             logging.info(f'The plot can be modified (to change color scales, remove or add tracks...) by modifining the file "circos.config" and excuting the command "circos -conf circos.config"')
