@@ -1,27 +1,19 @@
 # Base Image
-FROM continuumio/miniconda3:4.10.3
+FROM mambaorg/micromamba:0.24.0
  
 ################## METADATA ######################
  
-LABEL base.image="miniconda3:4.10.3"
-LABEL version="1"
+LABEL base.image="miniconda3:4.12.0"
 LABEL software="mummer2circos"
-LABEL software.version="1.1"
+LABEL software.version="1.4.2"
 LABEL tags="Genomics"
- 
-################## MAINTAINER ######################
- 
-MAINTAINER Trestan Pillonel
  
 ################## INSTALLATION ######################
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN conda install -c conda-forge mamba
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda mummer2circos && micromamba clean --all --yes
 
-COPY env.yaml ./
-RUN mamba env create -f env.yaml && conda clean --all --yes && echo ok2
-
-RUN conda init bash
-ENTRYPOINT ["/bin/bash"]
+#RUN conda init bash
+#ENTRYPOINT ["/bin/bash"]
 WORKDIR /data/
-ENV PATH /opt/conda/envs/mummer2circos/bin:$PATH
+ENV PATH /opt/conda/bin:$PATH

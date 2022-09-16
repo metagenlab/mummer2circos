@@ -8,28 +8,28 @@ Generate circular bacterial genome plots based on BLAST or NUCMER/PROMER alignme
 
 
 ```bash
-# create the environment
-conda env create -f env.yaml
-# activate the environment
-conda activate mummer2circos
+conda install -c bioconda -c conda-forge mummer2circos
 ```
 
-## Method 2: Singularity container   
+## Method 2: Singularity/Docker container   
 
-Dependency: [Singularity](https://sylabs.io/guides/3.0/user-guide/installation.html)
+A docker image is available on DockerHub: [metagenlab/mummer2circos:1.4.2](https://hub.docker.com/layers/metagenlab/mummer2circos/1.4.2/images/sha256-95144bb1e256e7902b417c89ea07679a254602fce2b3f871fc98794284e65b88?context=explore)
 
-### build the image 
+
+
+### build the image with singularity
+
+- [Singularity installation](https://sylabs.io/guides/3.0/user-guide/installation.html)
 
 ```bash
-singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.2
+singularity build mummer2circos.simg docker://metagenlab/mummer2circos:1.4.2
 ```
 
-### example
+### running with singularity
 
 ```bash
 singularity exec mummer2circos.simg mummer2circos -r <reference.fna> -q <query.fna>  -l
 ```
-
 
 # Alignment method
 
