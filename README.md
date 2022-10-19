@@ -1,5 +1,4 @@
 [![Downloads](https://anaconda.org/bioconda/mummer2circos/badges/downloads.svg?label=Bioconda)](https://anaconda.org/bioconda/mummer2circos) 
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/mummer2circos/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/mummer2circos/badges/latest_release_date.svg)](https://anaconda.org/bioconda/mummer2circos)
 
 # Description
